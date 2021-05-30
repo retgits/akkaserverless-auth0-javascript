@@ -1,0 +1,58 @@
+/**
+ * Specify the version of the Protobuf syntax
+ */
+syntax = "proto3";
+
+/**
+ * Packages prevent name clashes between protocol messages
+ * In this case, the package name is com.retgits.akkaserverless.actions
+ */
+package com.retgits.akkaserverless.actions;
+
+/**
+ * Imports allow you to use definitions from other protobuf files. In
+ * this case:
+ * * akkaserverless/annotations.proto contains definitions to work with 
+ * Akka Serverless.
+ * * google/api/annotations.proto contains definitions to add HTTP based 
+ * endpoints
+ */
+import "akkaserverless/annotations.proto";
+import "google/api/annotations.proto";
+
+/**
+ * The GreetingRequest is the input for the service Greeting and contains 
+ * two fields, name (the name of the person to greet) and greeting (how to
+ * greet the person)
+ */
+message GreetingRequest {
+    string name = 1;
+    string greeting = 2;
+}
+
+/**
+ * The GreetingResponse is the output of the service Greeting and contains
+ * only one field, the message that is sent back
+ */
+message GreetingResponse {
+    string message = 1;
+}
+
+/**
+ * The GreetingService shows all RPC methods that the service can handle.
+ * The names of the methods must match the names of the command handlers in
+ * the JavaScript code.
+ */
+service GreetingService {
+    /**
+     * The Greeting method accepts a GreetingRequest message and returns a
+     * GreetingResponse message if the function completes successfully. The
+     * method is exposed to the outside world over HTTP on the URL `/greet`
+     */
+    rpc Greeting(GreetingRequest) returns (GreetingResponse) {
+        option (google.api.http) = {
+            post: "/greet"
+            body: "*"
+        };
+    }
+}

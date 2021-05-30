@@ -1,0 +1,38 @@
+{
+  "name": "akkaserverless-auth0-javascript",
+  "version": "1.0.0",
+  "description": "An example app to show how to use Auth0 Machine to Machine authentication with Akka Serverless",
+  "main": "index.js",
+  "author": "retgits",
+  "license": "MIT",
+  "repository": {
+    "url": "https://github.com/retgits/akkaserverless-auth0-javascript"
+  },
+  "type": "module",
+  "dependencies": {
+    "@grpc/proto-loader": "^0.5.6",
+    "@lightbend/akkaserverless-javascript-sdk": "^0.7.0-beta.9",
+    "google-protobuf": "^3.14.0",
+    "grpc": "^1.24.9",
+    "jsonwebtoken": "^8.5.1",
+    "jwks-rsa": "^2.0.3"
+  },
+  "devDependencies": {
+    "chai": "^4.3.4",
+    "mocha": "^8.2.1"
+  },
+  "scripts": {
+    "test": "mocha ./test/*.test.js",
+    "pretest": "compile-descriptor ./app.proto",
+    "build": "compile-descriptor ./app.proto",
+    "start": "node index.js",
+    "container:build": "docker buildx build --platform linux/amd64 . -t ${DOCKER_USER:-retgits}/akkaserverless-auth0-javascript",
+    "container:push": "docker push ${DOCKER_USER:-retgits}/akkaserverless-auth0-javascript",
+    "devmode:network:create": "docker network create -d bridge akkasls",
+    "devmode:network:destroy": "docker network rm akkasls",
+    "devmode:proxy:start": "docker run --rm -it --name proxy --network akkasls -p 9000:9000 --env USER_FUNCTION_HOST=userfunction gcr.io/akkaserverless-public/akkaserverless-proxy:0.7.0-beta.9 -Dconfig.resource=dev-mode.conf -Dcloudstate.proxy.protocol-compatibility-check=false",
+    "devmode:proxy:stop": "docker stop proxy && docker rm proxy",
+    "devmode:container:start": "docker run --rm -it --name userfunction --hostname userfunction --network akkasls ${DOCKER_USER:-retgits}/akkaserverless-auth0-javascript",
+    "devmode:container:stop": "docker stop userfunction && docker rm userfunction"
+  }
+}
